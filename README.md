@@ -90,7 +90,8 @@ Paths must be absolute and point to directories you trust. `config.json` is giti
 ## Approval behavior
 
 - Read-only tools (`list_files`, `read_file`, `search_code`, `git_status`, `git_diff`, `ask_user`) do not require approval.
-- Mutating tools (`write_file`, `edit_file`, `run_shell`, `git_create_branch`, `git_commit`, `git_push`, `create_pr`) require typing the exact word `yes`.
+- Mutating tools (`write_file`, `edit_file`, `run_shell`, `run_shell_to_file`, `git_create_branch`, `git_commit`, `git_push`, `create_pr`) require typing the exact word `yes`.
+- `run_shell_to_file` stores command output in a temporary file and returns an ID. `read_shell_output` returns the output once and deletes the file.
 - `write_file` creates or replaces a complete UTF-8 file. `edit_file` replaces one exact text match in an existing UTF-8 file; it fails if the text is missing or appears more than once.
 - If several mutating calls are proposed in one model response, the harness displays them together. Approval covers only that displayed batch, not future calls.
 - Declining or typing anything except `yes` prevents those calls from executing.
@@ -112,7 +113,7 @@ This is a starter harness, **not a hardened sandbox**.
 
 ## Notes / limitations
 
-- Structured Ollama `tool_calls` are preferred. Some model templates emit textual legacy tool syntax; the fallback parser should only handle explicitly allowlisted read-only calls. Mutating calls must use structured tool calls.
+- Structured Ollama `tool_calls` are preferred. The textual fallback supports allowlisted read-only calls and shell calls; shell calls still require explicit approval. Other mutating calls must use structured tool calls.
 - Task history is in memory for the current process.
 - Workspace selection is configured through `defaultWorkspace`; change it in `config.json` and restart.
 - Node's built-in `fetch` is used; no Ollama SDK dependency is required.

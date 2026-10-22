@@ -5,6 +5,7 @@ import os from "node:os";
 import path from "node:path";
 import type { Config } from "../src/types.js";
 import { fileTools } from "../src/tools/files.js";
+import { shellTools } from "../src/tools/shell.js";
 
 const config: Config = {
   ollama: { baseUrl: "", model: "", timeoutMs: 0 },
@@ -52,4 +53,33 @@ test("edit_file rejects ambiguous replacement text", async () => {
   } finally {
     await rm(root, { recursive: true, force: true });
   }
+});
+
+test("run_shell_to_file saves output for one-time reading and deletes it", async () => {
+  const shellConfig = {
+    ...config,
+    security: { ...config.security, allowShell: true },
+    limits: { ...config.limits, shellTimeoutMs: 10000 },
+  };
+  const tools = shellTools(shellConfig);
+  const run = tools.find((item) => item.definition.function.name === "run_shell_to_file");
+  const read = tools.find((item) => item.definition.function.name === "read_shell_output");
+  assert.ok(run);
+  assert.ok(read);
+
+  const context = {
+    workspaceAlias: "test",
+    workspaceRoot: process.cwd(),
+    askUser: async () => "",
+  };
+  const saved = await run.execute({ command: "Write-Output ('x' * 12000)" }, context);
+  assert.equal(saved.ok, true);
+  const id = saved.output.match(/id ([0-9a-f-]+)/)?.[1];
+  assert.ok(id);
+
+  const output = await read.execute({ id }, context);
+  assert.equal(output.ok, true);
+  assert.ok(output.output.length > config.limits.maxFileBytes);
+  assert.match(output.output, /x{100}/);
+  await assert.rejects(read.execute({ id }, context), /Unknown or already-read/);
 });

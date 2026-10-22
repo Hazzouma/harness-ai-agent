@@ -1,6 +1,14 @@
 import type { ToolCall } from "../types.js";
-const allowed = new Set(["list_files", "read_file", "search_code", "git_status", "git_diff"]);
-export function parseLegacyReads(s: string): ToolCall[] {
+const allowed = new Set([
+  "list_files",
+  "read_file",
+  "search_code",
+  "git_status",
+  "git_diff",
+  "run_shell",
+  "run_shell_to_file",
+]);
+export function parseLegacyToolCalls(s: string): ToolCall[] {
   const out: ToolCall[] = [];
   const re = /<function=([a-zA-Z0-9_]+)>\s*([\s\S]*?)\s*<\/function>/g;
   for (const m of s.matchAll(re)) {

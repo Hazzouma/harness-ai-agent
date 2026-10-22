@@ -1,6 +1,6 @@
 import type { Config, Message, ToolCall, Result } from "./types.js";
 import { Ollama } from "./ollama/client.js";
-import { parseLegacyReads } from "./ollama/legacy-parser.js";
+import { parseLegacyToolCalls } from "./ollama/legacy-parser.js";
 import { approveBatch, askUser } from "./approval/terminal.js";
 import { audit } from "./audit/logger.js";
 import { Registry } from "./tools/registry.js";
@@ -24,7 +24,7 @@ export class Agent {
     for (let turn = 0; turn < 40; turn++) {
       const m = await this.client.chat(this.messages, this.r.definitions());
       let calls = m.tool_calls ?? [];
-      if (!calls.length) calls = parseLegacyReads(m.content);
+      if (!calls.length) calls = parseLegacyToolCalls(m.content);
       this.messages.push({
         role: "assistant",
         content: m.content,
