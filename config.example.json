@@ -1,0 +1,25 @@
+{
+  "ollama": {
+    "baseUrl": "http://127.0.0.1:11434",
+    "model": "qwen3-coder:30b",
+    "timeoutMs": 120000
+  },
+  "workspaces": {
+    "sample-app": "C:/dev/sample-app",
+    "tools-repo": "C:/dev/tools-repo"
+  },
+  "defaultWorkspace": "sample-app",
+  "limits": {
+    "maxFileBytes": 1000000,
+    "maxSearchResults": 100,
+    "shellTimeoutMs": 120000
+  },
+  "security": {
+    "allowShell": true,
+    "allowNetworkGit": true,
+    "blockedBranchNames": [
+      "main",
+      "master"
+    ]
+  }
+}
