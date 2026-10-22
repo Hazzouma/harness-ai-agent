@@ -15,7 +15,7 @@ src/
     legacy-parser.ts       restricted fallback for legacy read-only tool syntax
   tools/
     registry.ts             tool registration and execution
-    files.ts                list/read/search/write files
+    files.ts                list/read/search/write/edit files
     git.ts                  status/diff/branch/commit/push/PR
     shell.ts                approved PowerShell execution
     user.ts                 ask_user mid-task tool
@@ -24,6 +24,7 @@ src/
   audit/logger.ts           JSONL audit events
 tests/
   paths.test.ts
+  files.test.ts
 ```
 
 ## Requirements
@@ -89,7 +90,8 @@ Paths must be absolute and point to directories you trust. `config.json` is giti
 ## Approval behavior
 
 - Read-only tools (`list_files`, `read_file`, `search_code`, `git_status`, `git_diff`, `ask_user`) do not require approval.
-- Mutating tools (`write_file`, `run_shell`, `git_create_branch`, `git_commit`, `git_push`, `create_pr`) require typing the exact word `yes`.
+- Mutating tools (`write_file`, `edit_file`, `run_shell`, `git_create_branch`, `git_commit`, `git_push`, `create_pr`) require typing the exact word `yes`.
+- `write_file` creates or replaces a complete UTF-8 file. `edit_file` replaces one exact text match in an existing UTF-8 file; it fails if the text is missing or appears more than once.
 - If several mutating calls are proposed in one model response, the harness displays them together. Approval covers only that displayed batch, not future calls.
 - Declining or typing anything except `yes` prevents those calls from executing.
 - `ask_user` pauses the agent and waits for your answer.
