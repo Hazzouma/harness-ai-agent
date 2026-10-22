@@ -8,7 +8,9 @@ export async function approveBatch(calls: ToolCall[]): Promise<boolean> {
   );
   const r = createInterface({ input: stdin, output: stdout });
   try {
-    return (await r.question("Type yes to approve: ")).trim() === "yes";
+    const approvedValues = ["yes", "y", "approve", "a"];
+    const answer = await r.question("Type yes, y, approve, or a to approve: ");
+    return approvedValues.includes(answer.trim());
   } finally {
     r.close();
   }

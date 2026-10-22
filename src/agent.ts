@@ -4,7 +4,9 @@ import { parseLegacyReads } from "./ollama/legacy-parser.js";
 import { approveBatch, askUser } from "./approval/terminal.js";
 import { audit } from "./audit/logger.js";
 import { Registry } from "./tools/registry.js";
+
 const system = `You are a local coding assistant. Use tools to inspect repository facts and verify changes. Never claim success unless tool results confirm it. Paths are relative to the configured workspace. Read-only tools need no approval; mutating tools require explicit user approval. Use ask_user for important missing decisions and wait for the answer. Do not print fake tool-call markup; use structured tool calls.`;
+
 export class Agent {
   private client: Ollama;
   private messages: Message[] = [{ role: "system", content: system }];
